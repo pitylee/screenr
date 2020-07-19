@@ -399,12 +399,25 @@ if ( ! function_exists( 'screenr_get_section_gallery_data' ) ) {
 				$page_id = get_theme_mod( 'gallery_source_page' );
 				$images = '';
 				if ( $page_id ) {
-					$gallery = get_post_gallery( $page_id , false );
-					if ( $gallery ) {
-						$images = $gallery['ids'];
+					if( function_exists("qtrans_use") ){
+						$post = get_page($page_id); 
+						$post_content = qtrans_use( qtrans_getLanguage(), $post->post_content, true);
+						
+						if( has_shortcode( $post_content, 'gallery' ) ){
+							preg_match("/ids=\"(.*)\"/i", $post_content, $matches);
+							$images = ( !empty($matches[1]) ) ? $matches[1] : false;
+						}
+						else{}
+						
+					}
+					else{
+						$gallery = get_post_gallery( $page_id , false );
+						
+						if ( $gallery ) {
+							$images = $gallery['ids'];
+						}
 					}
 				}
-
 				$image_thumb_size = apply_filters( 'screenr_gallery_page_img_size', 'screenr-service-small' );
 
 				if ( ! empty( $images ) ) {
